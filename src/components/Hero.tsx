@@ -1,4 +1,4 @@
-import { Shield, TrendingUp, Brain, AlertTriangle } from "lucide-react";
+import { Shield, TrendingUp, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -39,20 +39,6 @@ const Hero = () => {
             Make smarter money decisions with confidence.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-in fade-in slide-in-from-top-6 duration-1000">
-            <Link to="/fraud-detector">
-              <Button variant="hero" size="lg" className="text-lg px-8">
-                Try Fraud Detector
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button variant="outline" size="lg" className="text-lg px-8">
-                View Dashboard
-              </Button>
-            </Link>
-          </div>
-
           {/* Feature Pills */}
           <div className="flex flex-wrap gap-4 justify-center pt-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg shadow-sm">
@@ -62,10 +48,6 @@ const Hero = () => {
             <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg shadow-sm">
               <TrendingUp className="h-5 w-5 text-accent" />
               <span className="text-sm font-medium">Smart Insights</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg shadow-sm">
-              <Brain className="h-5 w-5 text-primary" />
-              <span className="text-sm font-medium">AI Financial Coach</span>
             </div>
           </div>
         </div>
