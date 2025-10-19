@@ -8,6 +8,7 @@ import FinancialCoach from "./pages/FinancialCoach";
 import FraudDetector from "./pages/FraudDetector";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
+import GetStarted from "./pages/GetStarted";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/fraud-detector" element={<FraudDetector />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/learn" element={<Learn />} />
+          <Route path="/get-started" element={<GetStarted />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
