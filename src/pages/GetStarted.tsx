@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CreditCard, Building2, Smartphone, Plus, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GetStarted = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [upiIds, setUpiIds] = useState([
     { id: 1, name: "Primary UPI", upiId: "user@paytm" },
     { id: 2, name: "Secondary UPI", upiId: "user@googlepay" },
@@ -25,6 +29,41 @@ const GetStarted = () => {
     { id: 3, type: "debit", description: "Electricity Bill", amount: "$120", date: "2025-01-13", method: "Bank Account" },
     { id: 4, type: "credit", description: "Freelance Payment", amount: "$500", date: "2025-01-12", method: "UPI" },
   ]);
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        navigate("/");
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate("/");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,14 +1,32 @@
 import { Shield, Menu, X, Sun, Moon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { AuthDialog } from "@/components/AuthDialog";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    // Check initial auth state
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -63,11 +81,17 @@ const Navbar = () => {
               <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
             </Button>
-            <Link to="/get-started">
-              <Button variant="hero" size="sm">
+            {isAuthenticated ? (
+              <Link to="/get-started">
+                <Button variant="hero" size="sm">
+                  Get Started
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="hero" size="sm" onClick={() => setShowAuthDialog(true)}>
                 Get Started
               </Button>
-            </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -111,15 +135,31 @@ const Navbar = () => {
                 <Moon className="absolute h-[1.2rem] w-[1.2rem] ml-2 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                 <span className="ml-6">Toggle theme</span>
               </Button>
-              <Link to="/get-started" className="w-full">
-                <Button variant="hero" size="sm" className="w-full mt-2">
+              {isAuthenticated ? (
+                <Link to="/get-started" className="w-full">
+                  <Button variant="hero" size="sm" className="w-full mt-2">
+                    Get Started
+                  </Button>
+                </Link>
+              ) : (
+                <Button 
+                  variant="hero" 
+                  size="sm" 
+                  className="w-full mt-2"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setShowAuthDialog(true);
+                  }}
+                >
                   Get Started
                 </Button>
-              </Link>
+              )}
             </div>
           </div>
         )}
       </div>
+
+      <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
     </nav>
   );
 };
