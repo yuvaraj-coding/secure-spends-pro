@@ -1,12 +1,14 @@
-import { Shield, Menu, X } from "lucide-react";
+import { Shield, Menu, X, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -49,8 +51,18 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Theme Toggle & CTA Button */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="w-9 px-0"
+            >
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
             <Link to="/get-started">
               <Button variant="hero" size="sm">
                 Get Started
@@ -89,6 +101,16 @@ const Navbar = () => {
                   </Button>
                 </Link>
               ))}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="w-full justify-start mt-2"
+              >
+                <Sun className="h-[1.2rem] w-[1.2rem] mr-2 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] ml-2 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="ml-6">Toggle theme</span>
+              </Button>
               <Link to="/get-started" className="w-full">
                 <Button variant="hero" size="sm" className="w-full mt-2">
                   Get Started
