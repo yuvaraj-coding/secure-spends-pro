@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import FinancialCoach from "./pages/FinancialCoach";
 import FraudDetector from "./pages/FraudDetector";
+import AppScanner from "./pages/AppScanner";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import GetStarted from "./pages/GetStarted";
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/financial-coach" element={<FinancialCoach />} />
             <Route path="/fraud-detector" element={<FraudDetector />} />
+            <Route path="/app-scanner" element={<AppScanner />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/get-started" element={<GetStarted />} />
