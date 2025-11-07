@@ -11,6 +11,9 @@ import AppScanner from "./pages/AppScanner";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import GetStarted from "./pages/GetStarted";
+import ReduceFoodSpending from "./pages/ReduceFoodSpending";
+import InvestmentOpportunity from "./pages/InvestmentOpportunity";
+import SmartSavingsGoal from "./pages/SmartSavingsGoal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +33,9 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/get-started" element={<GetStarted />} />
+            <Route path="/reduce-food-spending" element={<ReduceFoodSpending />} />
+            <Route path="/investment-opportunity" element={<InvestmentOpportunity />} />
+            <Route path="/smart-savings-goal" element={<SmartSavingsGoal />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

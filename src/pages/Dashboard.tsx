@@ -1,6 +1,7 @@
 import { TrendingUp, TrendingDown, DollarSign, PieChart as PieChartIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const expenses = [
@@ -19,18 +20,21 @@ const Dashboard = () => {
       description: "You spent ₹3,200 on food last week. Reducing that by 25% could save you ₹800 this week.",
       icon: TrendingDown,
       color: "text-accent",
+      link: "/reduce-food-spending",
     },
     {
       title: "Investment Opportunity",
       description: "Based on your savings pattern, you could invest ₹5,000 monthly in mutual funds.",
       icon: TrendingUp,
       color: "text-success",
+      link: "/investment-opportunity",
     },
     {
       title: "Smart Savings Goal",
       description: "You're on track to save ₹15,000 this month. Great progress towards your goal!",
       icon: DollarSign,
       color: "text-primary",
+      link: "/smart-savings-goal",
     },
   ];
 
@@ -113,21 +117,22 @@ const Dashboard = () => {
               <h2 className="text-2xl font-bold">AI Financial Insights</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {aiTips.map((tip, index) => (
-                  <Card
-                    key={index}
-                    className="shadow-elevated hover:shadow-glow transition-all duration-300 animate-in fade-in slide-in-from-bottom-4"
-                    style={{ animationDelay: `${index * 150}ms` }}
-                  >
-                    <CardHeader>
-                      <div className={`p-2 bg-muted rounded-lg w-fit ${tip.color}`}>
-                        <tip.icon className="h-5 w-5" />
-                      </div>
-                      <CardTitle className="text-lg">{tip.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{tip.description}</p>
-                    </CardContent>
-                  </Card>
+                  <Link key={index} to={tip.link}>
+                    <Card
+                      className="shadow-elevated hover:shadow-glow transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 cursor-pointer h-full"
+                      style={{ animationDelay: `${index * 150}ms` }}
+                    >
+                      <CardHeader>
+                        <div className={`p-2 bg-muted rounded-lg w-fit ${tip.color}`}>
+                          <tip.icon className="h-5 w-5" />
+                        </div>
+                        <CardTitle className="text-lg">{tip.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-muted-foreground">{tip.description}</p>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 ))}
               </div>
             </div>
