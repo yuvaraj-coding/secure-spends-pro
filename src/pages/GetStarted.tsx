@@ -31,28 +31,40 @@ const GetStarted = () => {
   ]);
 
   useEffect(() => {
-    // Check if user is authenticated
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    let mounted = true;
+
+    // Listen for auth changes first
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
       
       if (!session) {
         navigate("/");
       } else {
         setIsLoading(false);
       }
-    };
+    });
 
-    checkAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Then check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
       if (!session) {
         navigate("/");
+      } else {
+        setIsLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
 
   if (isLoading) {
     return (
@@ -69,9 +81,14 @@ const GetStarted = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Account Management</h1>
-          <p className="text-muted-foreground">Manage your bank accounts, UPI IDs, and view transactions</p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Account Management</h1>
+            <p className="text-muted-foreground">Manage your bank accounts, UPI IDs, and view transactions</p>
+          </div>
+          <Button variant="outline" onClick={handleSignOut}>
+            Sign Out
+          </Button>
         </div>
 
         <Tabs defaultValue="accounts" className="space-y-6">
