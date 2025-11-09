@@ -34,6 +34,7 @@ const Navbar = () => {
     { name: "Fraud Detector", path: "/fraud-detector" },
     { name: "App Scanner", path: "/app-scanner" },
     { name: "Dashboard", path: "/dashboard" },
+    { name: "Transactions", path: "/transaction-history" },
     { name: "Learn & Earn", path: "/learn" },
   ];
 
