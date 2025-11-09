@@ -14,6 +14,7 @@ import GetStarted from "./pages/GetStarted";
 import ReduceFoodSpending from "./pages/ReduceFoodSpending";
 import InvestmentOpportunity from "./pages/InvestmentOpportunity";
 import SmartSavingsGoal from "./pages/SmartSavingsGoal";
+import TransactionHistory from "./pages/TransactionHistory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/reduce-food-spending" element={<ReduceFoodSpending />} />
             <Route path="/investment-opportunity" element={<InvestmentOpportunity />} />
             <Route path="/smart-savings-goal" element={<SmartSavingsGoal />} />
+            <Route path="/transaction-history" element={<TransactionHistory />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

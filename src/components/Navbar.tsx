@@ -1,32 +1,54 @@
-import { Shield, Menu, X, Sun, Moon } from "lucide-react";
+import { Shield, Menu, X, Sun, Moon, User, Settings, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "@/components/AuthDialog";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState<string>("");
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     // Check initial auth state
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
+      setUserEmail(session?.user?.email || "");
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
+      setUserEmail(session?.user?.email || "");
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
+  const getInitials = (email: string) => {
+    return email.substring(0, 2).toUpperCase();
+  };
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -34,6 +56,7 @@ const Navbar = () => {
     { name: "Fraud Detector", path: "/fraud-detector" },
     { name: "App Scanner", path: "/app-scanner" },
     { name: "Dashboard", path: "/dashboard" },
+    { name: "Transactions", path: "/transaction-history" },
     { name: "Learn & Earn", path: "/learn" },
   ];
 
@@ -70,7 +93,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Theme Toggle & CTA Button */}
+          {/* Theme Toggle & User Profile */}
           <div className="hidden md:flex items-center gap-2">
             <Button
               variant="ghost"
@@ -83,11 +106,42 @@ const Navbar = () => {
               <span className="sr-only">Toggle theme</span>
             </Button>
             {isAuthenticated ? (
-              <Link to="/get-started">
-                <Button variant="hero" size="sm">
-                  Get Started
-                </Button>
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-10 w-10 border-2 border-primary/20 hover:border-primary/40 transition-colors">
+                      <AvatarImage src="" alt={userEmail} />
+                      <AvatarFallback className="bg-gradient-primary text-primary-foreground">
+                        {getInitials(userEmail)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-card" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">Account</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {userEmail}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>View Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Button variant="hero" size="sm" onClick={() => setShowAuthDialog(true)}>
                 Get Started
@@ -137,11 +191,53 @@ const Navbar = () => {
                 <span className="ml-6">Toggle theme</span>
               </Button>
               {isAuthenticated ? (
-                <Link to="/get-started" className="w-full">
-                  <Button variant="hero" size="sm" className="w-full mt-2">
-                    Get Started
+                <>
+                  <div className="flex items-center gap-3 px-3 py-2 mt-2 bg-accent/10 rounded-lg">
+                    <Avatar className="h-10 w-10 border-2 border-primary/20">
+                      <AvatarImage src="" alt={userEmail} />
+                      <AvatarFallback className="bg-gradient-primary text-primary-foreground">
+                        {getInitials(userEmail)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">Account</p>
+                      <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start mt-1"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate("/dashboard");
+                    }}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    <span>View Profile</span>
                   </Button>
-                </Link>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate("/dashboard");
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleSignOut();
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </Button>
+                </>
               ) : (
                 <Button 
                   variant="hero" 
