@@ -2,7 +2,6 @@ import { Shield, TrendingUp, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
-import CircularCoinsAnimation from "@/components/CircularCoinsAnimation";
 
 const Hero = () => {
   return (
@@ -50,11 +49,6 @@ const Hero = () => {
               <TrendingUp className="h-5 w-5 text-accent" />
               <span className="text-sm font-medium">Smart Insights</span>
             </div>
-          </div>
-
-          {/* Circular Coins Animation */}
-          <div className="flex justify-center pt-12 animate-in fade-in zoom-in duration-1000">
-            <CircularCoinsAnimation radius={120} coinSize={35} speed={2.5} />
           </div>
         </div>
       </div>
