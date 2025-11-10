@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Shield, AlertTriangle, CheckCircle, Loader2, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
 
 interface ScanResult {
   safetyScore: number;
@@ -15,6 +16,17 @@ interface ScanResult {
   recommendations: string[];
 }
 
+// Validation schema
+const urlSchema = z.object({
+  url: z.string()
+    .url("Please enter a valid URL")
+    .max(2048, "URL must be less than 2048 characters")
+    .refine(
+      (url) => url.startsWith('http://') || url.startsWith('https://'),
+      "URL must start with http:// or https://"
+    )
+});
+
 const AppScanner = () => {
   const [url, setUrl] = useState("");
   const [isScanning, setIsScanning] = useState(false);
@@ -22,10 +34,14 @@ const AppScanner = () => {
   const { toast } = useToast();
 
   const scanApp = async () => {
-    if (!url.trim()) {
+    // Validate input
+    const validationResult = urlSchema.safeParse({ url: url.trim() });
+    
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors[0]?.message || "Invalid URL";
       toast({
-        title: "URL Required",
-        description: "Please enter a valid app URL to scan",
+        title: "Invalid URL",
+        description: errorMessage,
         variant: "destructive",
       });
       return;

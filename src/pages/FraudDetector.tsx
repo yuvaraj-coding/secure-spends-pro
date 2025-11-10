@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
+import { z } from "zod";
 
 interface FraudResult {
   score: number;
@@ -14,6 +15,20 @@ interface FraudResult {
   recommendations: string[];
 }
 
+// Validation schema
+const fraudSchema = z.object({
+  upiId: z.string()
+    .min(3, "UPI ID must be at least 3 characters")
+    .max(255, "UPI ID must be less than 255 characters")
+    .regex(/^[a-zA-Z0-9.@-]+$/, "Invalid UPI ID format - only letters, numbers, dots, @ and hyphens allowed"),
+  amount: z.string()
+    .regex(/^\d+(\.\d{1,2})?$/, "Invalid amount - use numbers only with up to 2 decimal places")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return num > 0 && num <= 1000000;
+    }, "Amount must be between ₹1 and ₹10,00,000")
+});
+
 const FraudDetector = () => {
   const [upiId, setUpiId] = useState("");
   const [amount, setAmount] = useState("");
@@ -21,8 +36,12 @@ const FraudDetector = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const analyzeTransaction = () => {
-    if (!upiId || !amount) {
-      toast.error("Please fill in all fields");
+    // Validate inputs
+    const validationResult = fraudSchema.safeParse({ upiId, amount });
+    
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.errors[0]?.message || "Invalid input";
+      toast.error(errorMessage);
       return;
     }
 
