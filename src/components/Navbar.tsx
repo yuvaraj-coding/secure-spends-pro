@@ -58,7 +58,7 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "AI Financial Coach", path: "/financial-coach" },
     { name: "Fraud Detector", path: "/fraud-detector" },
-    { name: "Account Management", path: "/dashboard" },
+    { name: "Account Management", path: "/account-management" },
     { name: "Dashboard", path: "/dashboard" },
     { name: "Transactions", path: "/transaction-history" },
     { name: "Learn & Earn", path: "/learn" },
