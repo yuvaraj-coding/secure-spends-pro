@@ -58,7 +58,7 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "AI Financial Coach", path: "/financial-coach" },
     { name: "Fraud Detector", path: "/fraud-detector" },
-    { name: "App Scanner", path: "/app-scanner" },
+    { name: "Account Management", path: "/dashboard" },
     { name: "Dashboard", path: "/dashboard" },
     { name: "Transactions", path: "/transaction-history" },
     { name: "Learn & Earn", path: "/learn" },
@@ -136,10 +136,6 @@ const Navbar = () => {
                   <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     <span>View Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
@@ -220,17 +216,6 @@ const Navbar = () => {
                   >
                     <User className="mr-2 h-4 w-4" />
                     <span>View Profile</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      navigate("/dashboard");
-                    }}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
                   </Button>
                   <Button
                     variant="ghost"
