@@ -50,7 +50,11 @@ const Navbar = () => {
     return email.substring(0, 2).toUpperCase();
   };
 
-  const navItems = [
+  const publicNavItems = [
+    { name: "Home", path: "/" },
+  ];
+
+  const authenticatedNavItems = [
     { name: "Home", path: "/" },
     { name: "AI Financial Coach", path: "/financial-coach" },
     { name: "Fraud Detector", path: "/fraud-detector" },
@@ -59,6 +63,8 @@ const Navbar = () => {
     { name: "Transactions", path: "/transaction-history" },
     { name: "Learn & Earn", path: "/learn" },
   ];
+
+  const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -144,7 +150,7 @@ const Navbar = () => {
               </DropdownMenu>
             ) : (
               <Button variant="hero" size="sm" onClick={() => setShowAuthDialog(true)}>
-                Get Started
+                Login
               </Button>
             )}
           </div>
@@ -248,7 +254,7 @@ const Navbar = () => {
                     setShowAuthDialog(true);
                   }}
                 >
-                  Get Started
+                  Login
                 </Button>
               )}
             </div>
