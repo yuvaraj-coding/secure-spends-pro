@@ -1,24 +1,83 @@
-import { TrendingUp, TrendingDown, DollarSign, PieChart as PieChartIcon, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, PieChart as PieChartIcon, CheckCircle, AlertTriangle, XCircle, Edit2, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import Navbar from "@/components/Navbar";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Dashboard = () => {
-  // Sample data - in a real app, these would come from user input or database
-  const income = 30000;
-  const savingsGoal = 8000;
-  
-  const expenses = [
-    { category: "Food & Dining", amount: 7000, color: "bg-accent", icon: "🍔" },
-    { category: "Transportation", amount: 3000, color: "bg-primary", icon: "🚗" },
-    { category: "Entertainment", amount: 2000, color: "bg-success", icon: "🎬" },
-    { category: "Shopping", amount: 5000, color: "bg-warning", icon: "🛍" },
-    { category: "Utilities", amount: 2000, color: "bg-destructive", icon: "💡" },
-    { category: "Others", amount: 1000, color: "bg-muted", icon: "📦" },
-  ];
+  // Editable state
+  const [income, setIncome] = useState(30000);
+  const [savingsGoal, setSavingsGoal] = useState(8000);
+  const [expenses, setExpenses] = useState([
+    { id: 1, category: "Food & Dining", amount: 7000, color: "bg-accent", icon: "🍔" },
+    { id: 2, category: "Transportation", amount: 3000, color: "bg-primary", icon: "🚗" },
+    { id: 3, category: "Entertainment", amount: 2000, color: "bg-success", icon: "🎬" },
+    { id: 4, category: "Shopping", amount: 5000, color: "bg-warning", icon: "🛍" },
+    { id: 5, category: "Utilities", amount: 2000, color: "bg-destructive", icon: "💡" },
+    { id: 6, category: "Others", amount: 1000, color: "bg-muted", icon: "📦" },
+  ]);
 
+  // Edit dialog states
+  const [editIncomeOpen, setEditIncomeOpen] = useState(false);
+  const [editGoalOpen, setEditGoalOpen] = useState(false);
+  const [editExpenseOpen, setEditExpenseOpen] = useState(false);
+  const [addCategoryOpen, setAddCategoryOpen] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState<any>(null);
+  const [tempIncome, setTempIncome] = useState(income);
+  const [tempGoal, setTempGoal] = useState(savingsGoal);
+  const [tempExpense, setTempExpense] = useState({ category: "", amount: 0, icon: "" });
+  const [newCategory, setNewCategory] = useState({ category: "", amount: 0, icon: "📦" });
+
+  // Handlers
+  const handleSaveIncome = () => {
+    setIncome(tempIncome);
+    setEditIncomeOpen(false);
+  };
+
+  const handleSaveGoal = () => {
+    setSavingsGoal(tempGoal);
+    setEditGoalOpen(false);
+  };
+
+  const handleEditExpense = (expense: any) => {
+    setSelectedExpense(expense);
+    setTempExpense({ category: expense.category, amount: expense.amount, icon: expense.icon });
+    setEditExpenseOpen(true);
+  };
+
+  const handleSaveExpense = () => {
+    setExpenses(expenses.map(exp => 
+      exp.id === selectedExpense.id 
+        ? { ...exp, category: tempExpense.category, amount: tempExpense.amount, icon: tempExpense.icon }
+        : exp
+    ));
+    setEditExpenseOpen(false);
+  };
+
+  const handleAddCategory = () => {
+    const newId = Math.max(...expenses.map(e => e.id)) + 1;
+    setExpenses([...expenses, { 
+      id: newId, 
+      category: newCategory.category, 
+      amount: newCategory.amount, 
+      icon: newCategory.icon,
+      color: "bg-muted"
+    }]);
+    setNewCategory({ category: "", amount: 0, icon: "📦" });
+    setAddCategoryOpen(false);
+  };
+
+  const handleDeleteExpense = (id: number) => {
+    setExpenses(expenses.filter(exp => exp.id !== id));
+  };
+
+  // Calculations
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
   const savings = income - totalExpenses;
   const savingsPercentage = ((savings / savingsGoal) * 100).toFixed(1);
@@ -92,7 +151,33 @@ const Dashboard = () => {
               <Card className="shadow-elevated">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Monthly Income</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <Dialog open={editIncomeOpen} onOpenChange={setEditIncomeOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setTempIncome(income)}>
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Monthly Income</DialogTitle>
+                        <DialogDescription>Update your monthly income amount</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="income">Income Amount (₹)</Label>
+                          <Input
+                            id="income"
+                            type="number"
+                            value={tempIncome}
+                            onChange={(e) => setTempIncome(Number(e.target.value))}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={handleSaveIncome}>Save</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold">₹{income.toLocaleString()}</div>
@@ -114,7 +199,33 @@ const Dashboard = () => {
               <Card className="shadow-elevated">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Savings</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-success" />
+                  <Dialog open={editGoalOpen} onOpenChange={setEditGoalOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setTempGoal(savingsGoal)}>
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Edit Savings Goal</DialogTitle>
+                        <DialogDescription>Update your monthly savings target</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="goal">Savings Goal (₹)</Label>
+                          <Input
+                            id="goal"
+                            type="number"
+                            value={tempGoal}
+                            onChange={(e) => setTempGoal(Number(e.target.value))}
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button onClick={handleSaveGoal}>Save</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-success">₹{savings.toLocaleString()}</div>
@@ -138,9 +249,58 @@ const Dashboard = () => {
 
             {/* Expense Breakdown Table */}
             <Card className="shadow-elevated">
-              <CardHeader>
-                <CardTitle>🧾 Expense Breakdown</CardTitle>
-                <CardDescription>Your spending by category this month</CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>🧾 Expense Breakdown</CardTitle>
+                  <CardDescription>Your spending by category this month</CardDescription>
+                </div>
+                <Dialog open={addCategoryOpen} onOpenChange={setAddCategoryOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Category
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Category</DialogTitle>
+                      <DialogDescription>Create a new expense category</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new-category">Category Name</Label>
+                        <Input
+                          id="new-category"
+                          value={newCategory.category}
+                          onChange={(e) => setNewCategory({ ...newCategory, category: e.target.value })}
+                          placeholder="e.g., Healthcare"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-amount">Amount (₹)</Label>
+                        <Input
+                          id="new-amount"
+                          type="number"
+                          value={newCategory.amount}
+                          onChange={(e) => setNewCategory({ ...newCategory, amount: Number(e.target.value) })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-icon">Icon (emoji)</Label>
+                        <Input
+                          id="new-icon"
+                          value={newCategory.icon}
+                          onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
+                          placeholder="📦"
+                          maxLength={2}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleAddCategory}>Add Category</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -150,13 +310,14 @@ const Dashboard = () => {
                       <TableHead className="text-right">Amount (₹)</TableHead>
                       <TableHead className="text-right">% of Total</TableHead>
                       <TableHead className="text-right">Remark</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {expensesWithDetails.map((expense, index) => {
                       const remark = getExpenseRemark(Number(expense.percentage));
                       return (
-                        <TableRow key={index} className="animate-in fade-in slide-in-from-left-4" style={{ animationDelay: `${index * 50}ms` }}>
+                        <TableRow key={expense.id} className="animate-in fade-in slide-in-from-left-4" style={{ animationDelay: `${index * 50}ms` }}>
                           <TableCell className="font-medium">
                             <span className="mr-2">{expense.icon}</span>
                             {expense.category}
@@ -166,6 +327,26 @@ const Dashboard = () => {
                           <TableCell className="text-right">
                             <Badge variant={remark.color as any}>{remark.label}</Badge>
                           </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => handleEditExpense(expense)}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteExpense(expense.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -174,11 +355,53 @@ const Dashboard = () => {
                       <TableCell className="text-right">₹{totalExpenses.toLocaleString()}</TableCell>
                       <TableCell className="text-right">100%</TableCell>
                       <TableCell></TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
+
+            {/* Edit Expense Dialog */}
+            <Dialog open={editExpenseOpen} onOpenChange={setEditExpenseOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Expense</DialogTitle>
+                  <DialogDescription>Update the expense details</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-category">Category Name</Label>
+                    <Input
+                      id="edit-category"
+                      value={tempExpense.category}
+                      onChange={(e) => setTempExpense({ ...tempExpense, category: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-amount">Amount (₹)</Label>
+                    <Input
+                      id="edit-amount"
+                      type="number"
+                      value={tempExpense.amount}
+                      onChange={(e) => setTempExpense({ ...tempExpense, amount: Number(e.target.value) })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-icon">Icon (emoji)</Label>
+                    <Input
+                      id="edit-icon"
+                      value={tempExpense.icon}
+                      onChange={(e) => setTempExpense({ ...tempExpense, icon: e.target.value })}
+                      maxLength={2}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleSaveExpense}>Save Changes</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             {/* Financial Summary & Insights */}
             <Card className="shadow-elevated">
