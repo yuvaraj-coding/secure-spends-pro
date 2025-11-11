@@ -66,7 +66,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
         toast.success("Account created successfully!");
         onOpenChange(false);
-        navigate("/dashboard");
+        navigate("/");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: values.email,
@@ -77,7 +77,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
         toast.success("Logged in successfully!");
         onOpenChange(false);
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
