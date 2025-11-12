@@ -49,7 +49,7 @@ const Profile = () => {
     setUser(user);
 
     // Load profile data from database
-    const { data: profile } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
@@ -60,7 +60,7 @@ const Profile = () => {
         fullName: profile.full_name || "",
         email: user.email || "",
         phoneNumber: profile.phone_number || "",
-        dateOfBirth: profile.date_of_birth || "",
+        dateOfBirth: profile.date_of_birth ? new Date(profile.date_of_birth).toISOString().split('T')[0] : "",
         address: profile.address || "",
         occupation: profile.occupation || "",
         incomeRange: profile.income_range || "",
@@ -70,6 +70,9 @@ const Profile = () => {
       if (profile.investments) {
         setInvestments(profile.investments as any);
       }
+    } else if (profileError && profileError.code !== 'PGRST116') {
+      // PGRST116 means no rows returned, which is fine for new users
+      console.error('Error loading profile:', profileError);
     } else {
       setFormData(prev => ({
         ...prev,
@@ -92,23 +95,39 @@ const Profile = () => {
     
     setLoading(true);
     try {
+      const profileData: any = {
+        user_id: user.id,
+        full_name: formData.fullName,
+        phone_number: formData.phoneNumber,
+        address: formData.address,
+        occupation: formData.occupation,
+        income_range: formData.incomeRange,
+        profile_picture: formData.profilePicture,
+        investments: investments,
+      };
+
+      // Only add date_of_birth if it has a value
+      if (formData.dateOfBirth) {
+        profileData.date_of_birth = formData.dateOfBirth;
+      }
+
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
-          full_name: formData.fullName,
-          phone_number: formData.phoneNumber,
-          date_of_birth: formData.dateOfBirth || null,
-          address: formData.address,
-          occupation: formData.occupation,
-          income_range: formData.incomeRange,
-          profile_picture: formData.profilePicture,
-          investments: investments,
+        .upsert(profileData, {
+          onConflict: 'user_id'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Save error:', error);
+        throw error;
+      }
+      
       toast.success("Profile updated successfully!");
+      
+      // Reload profile to confirm save
+      await checkUser();
     } catch (error: any) {
+      console.error('Profile save error:', error);
       toast.error(error.message || "Failed to update profile");
     } finally {
       setLoading(false);
