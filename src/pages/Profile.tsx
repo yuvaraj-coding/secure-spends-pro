@@ -47,11 +47,35 @@ const Profile = () => {
       return;
     }
     setUser(user);
-    setFormData(prev => ({
-      ...prev,
-      email: user.email || "",
-      fullName: user.user_metadata?.full_name || "",
-    }));
+
+    // Load profile data from database
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profile) {
+      setFormData({
+        fullName: profile.full_name || "",
+        email: user.email || "",
+        phoneNumber: profile.phone_number || "",
+        dateOfBirth: profile.date_of_birth || "",
+        address: profile.address || "",
+        occupation: profile.occupation || "",
+        incomeRange: profile.income_range || "",
+        profilePicture: profile.profile_picture || "",
+      });
+      
+      if (profile.investments) {
+        setInvestments(profile.investments as any);
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || "",
+      }));
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,20 +88,23 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
+    if (!user) return;
+    
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user.id,
           full_name: formData.fullName,
           phone_number: formData.phoneNumber,
-          date_of_birth: formData.dateOfBirth,
+          date_of_birth: formData.dateOfBirth || null,
           address: formData.address,
           occupation: formData.occupation,
           income_range: formData.incomeRange,
-          investments: investments,
           profile_picture: formData.profilePicture,
-        }
-      });
+          investments: investments,
+        });
 
       if (error) throw error;
       toast.success("Profile updated successfully!");
