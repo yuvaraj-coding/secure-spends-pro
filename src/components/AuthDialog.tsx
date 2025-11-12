@@ -23,13 +23,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
 type AuthFormValues = z.infer<typeof authSchema>;
+type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 interface AuthDialogProps {
   open: boolean;
@@ -39,6 +51,7 @@ interface AuthDialogProps {
 export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<AuthFormValues>({
@@ -46,6 +59,13 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     defaultValues: {
       email: "",
       password: "",
+    },
+  });
+
+  const forgotPasswordForm = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
     },
   });
 
@@ -81,6 +101,26 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
       }
     } catch (error: any) {
       toast.error(error.message || "Authentication failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onForgotPasswordSubmit = async (values: ForgotPasswordFormValues) => {
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      toast.success("Password reset link sent successfully! Please check your email.");
+      setShowForgotPassword(false);
+      forgotPasswordForm.reset();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send reset link");
     } finally {
       setIsLoading(false);
     }
@@ -138,6 +178,16 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                 </Button>
               </form>
             </Form>
+            
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-primary hover:underline"
+              >
+                Forgot Password?
+              </button>
+            </div>
           </TabsContent>
 
           <TabsContent value="signup" className="space-y-4">
@@ -179,6 +229,50 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           </TabsContent>
         </Tabs>
       </DialogContent>
+
+      <AlertDialog open={showForgotPassword} onOpenChange={setShowForgotPassword}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Forgot Password?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter your registered email address and we'll send you a link to reset your password.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <Form {...forgotPasswordForm}>
+            <form onSubmit={forgotPasswordForm.handleSubmit(onForgotPasswordSubmit)} className="space-y-4">
+              <FormField
+                control={forgotPasswordForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="your@email.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowForgotPassword(false)}
+                  className="flex-1"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isLoading}>
+                  {isLoading ? "Sending..." : "Send Reset Link"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }
