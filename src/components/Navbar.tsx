@@ -21,6 +21,7 @@ const Navbar = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
+  const [profilePicture, setProfilePicture] = useState<string>("");
   const location = useLocation();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
@@ -30,16 +31,36 @@ const Navbar = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
       setUserEmail(session?.user?.email || "");
+      if (session?.user) {
+        loadProfilePicture(session.user.id);
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
       setUserEmail(session?.user?.email || "");
+      if (session?.user) {
+        loadProfilePicture(session.user.id);
+      } else {
+        setProfilePicture("");
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const loadProfilePicture = async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('profile_picture')
+      .eq('user_id', userId)
+      .single();
+    
+    if (data?.profile_picture) {
+      setProfilePicture(data.profile_picture);
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -116,7 +137,7 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10 border-2 border-primary/20 hover:border-primary/40 transition-colors">
-                      <AvatarImage src="" alt={userEmail} />
+                      <AvatarImage src={profilePicture} alt={userEmail} />
                       <AvatarFallback className="bg-gradient-primary text-primary-foreground">
                         {getInitials(userEmail)}
                       </AvatarFallback>
@@ -196,7 +217,7 @@ const Navbar = () => {
                 <>
                   <div className="flex items-center gap-3 px-3 py-2 mt-2 bg-accent/10 rounded-lg">
                     <Avatar className="h-10 w-10 border-2 border-primary/20">
-                      <AvatarImage src="" alt={userEmail} />
+                      <AvatarImage src={profilePicture} alt={userEmail} />
                       <AvatarFallback className="bg-gradient-primary text-primary-foreground">
                         {getInitials(userEmail)}
                       </AvatarFallback>
