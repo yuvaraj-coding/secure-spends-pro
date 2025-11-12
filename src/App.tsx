@@ -11,6 +11,7 @@ import AppScanner from "./pages/AppScanner";
 import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import GetStarted from "./pages/GetStarted";
+import Profile from "./pages/Profile";
 import AccountManagement from "./pages/AccountManagement";
 import ReduceFoodSpending from "./pages/ReduceFoodSpending";
 import InvestmentOpportunity from "./pages/InvestmentOpportunity";
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/investment-opportunity" element={<InvestmentOpportunity />} />
             <Route path="/smart-savings-goal" element={<SmartSavingsGoal />} />
             <Route path="/transaction-history" element={<TransactionHistory />} />
+            <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
