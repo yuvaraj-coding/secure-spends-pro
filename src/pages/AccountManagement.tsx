@@ -19,15 +19,15 @@ const AccountManagement = () => {
   ]);
 
   const [bankAccounts, setBankAccounts] = useState([
-    { id: 1, name: "Savings Account", bank: "State Bank", accountNumber: "****5678", balance: "$5,240" },
-    { id: 2, name: "Current Account", bank: "HDFC Bank", accountNumber: "****1234", balance: "$12,850" },
+    { id: 1, name: "Savings Account", bank: "State Bank", accountNumber: "****5678", balance: "₹5,240" },
+    { id: 2, name: "Current Account", bank: "HDFC Bank", accountNumber: "****1234", balance: "₹12,850" },
   ]);
 
   const [transactions] = useState([
-    { id: 1, type: "credit", description: "Salary Credit", amount: "$3,500", date: "2025-01-15", method: "Bank Transfer" },
-    { id: 2, type: "debit", description: "Grocery Shopping", amount: "$85", date: "2025-01-14", method: "UPI" },
-    { id: 3, type: "debit", description: "Electricity Bill", amount: "$120", date: "2025-01-13", method: "Bank Account" },
-    { id: 4, type: "credit", description: "Freelance Payment", amount: "$500", date: "2025-01-12", method: "UPI" },
+    { id: 1, type: "credit", description: "Salary Credit", amount: "₹3,500", date: "2025-01-15", method: "Bank Transfer" },
+    { id: 2, type: "debit", description: "Grocery Shopping", amount: "₹85", date: "2025-01-14", method: "UPI" },
+    { id: 3, type: "debit", description: "Electricity Bill", amount: "₹120", date: "2025-01-13", method: "Bank Account" },
+    { id: 4, type: "credit", description: "Freelance Payment", amount: "₹500", date: "2025-01-12", method: "UPI" },
   ]);
 
   useEffect(() => {
