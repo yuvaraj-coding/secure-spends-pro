@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GraduationCap, Trophy, Coins } from "lucide-react";
+import { GraduationCap, Trophy, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -53,7 +53,7 @@ const Learn = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
-  const [finCoins, setFinCoins] = useState(0);
+  const [mutualFunds, setMutualFunds] = useState(0);
 
   const handleAnswerSelect = (index: number) => {
     if (showExplanation) return;
@@ -63,8 +63,8 @@ const Learn = () => {
 
     if (index === questions[currentQuestion].correctAnswer) {
       setScore(score + 1);
-      setFinCoins(finCoins + 10);
-      toast.success("Correct! +10 FinCoins earned! 🎉");
+      setMutualFunds(mutualFunds + 10);
+      toast.success("Correct! +10 Mutual Funds earned! 🎉");
     } else {
       toast.error("Not quite right. Keep learning!");
     }
@@ -104,7 +104,7 @@ const Learn = () => {
               </div>
               <h1 className="text-4xl md:text-5xl font-bold">Learn & Earn</h1>
               <p className="text-xl text-muted-foreground">
-                Test your financial knowledge and earn FinCoins
+                Test your financial knowledge and earn Mutual Funds
               </p>
             </div>
 
@@ -122,10 +122,10 @@ const Learn = () => {
 
               <Card className="shadow-sm">
                 <CardContent className="p-4 flex items-center gap-3">
-                  <Coins className="h-8 w-8 text-accent" />
+                  <TrendingUp className="h-8 w-8 text-accent" />
                   <div>
-                    <p className="text-2xl font-bold">{finCoins}</p>
-                    <p className="text-xs text-muted-foreground">FinCoins</p>
+                    <p className="text-2xl font-bold">{mutualFunds}</p>
+                    <p className="text-xs text-muted-foreground">Mutual Funds</p>
                   </div>
                 </CardContent>
               </Card>
@@ -227,9 +227,9 @@ const Learn = () => {
             <Card className="bg-gradient-primary text-primary-foreground shadow-glow">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <Coins className="h-8 w-8 flex-shrink-0 mt-1" />
+                  <TrendingUp className="h-8 w-8 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">What can you do with FinCoins?</h3>
+                    <h3 className="font-semibold text-lg mb-2">What can you do with Mutual Funds?</h3>
                     <ul className="space-y-1 text-sm opacity-90">
                       <li>• Unlock premium AI insights and tips</li>
                       <li>• Access advanced investment simulators</li>
