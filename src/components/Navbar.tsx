@@ -133,7 +133,7 @@ const Navbar = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     <span>View Profile</span>
                   </DropdownMenuItem>
@@ -211,7 +211,7 @@ const Navbar = () => {
                     className="w-full justify-start mt-1"
                     onClick={() => {
                       setIsMenuOpen(false);
-                      navigate("/dashboard");
+                      navigate("/profile");
                     }}
                   >
                     <User className="mr-2 h-4 w-4" />
