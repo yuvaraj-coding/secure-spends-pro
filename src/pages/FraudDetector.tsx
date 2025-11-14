@@ -50,41 +50,32 @@ const FraudDetector = () => {
     // Simulate AI analysis
     setTimeout(() => {
       const numAmount = parseFloat(amount);
-      let score = Math.floor(Math.random() * 100);
+      let score: number;
+      let riskLevel: "low" | "medium" | "high";
       const warnings: string[] = [];
       const recommendations: string[] = [];
 
-      // Risk factors
-      if (numAmount > 10000) {
-        score += 20;
-        warnings.push("Large transaction amount detected");
-      }
-
-      if (upiId.includes("random") || upiId.includes("unknown")) {
-        score += 30;
-        warnings.push("Suspicious UPI ID pattern detected");
-      }
-
-      if (numAmount % 100 === 0 && numAmount > 5000) {
-        score += 10;
-        warnings.push("Round number transactions can indicate scam patterns");
-      }
-
-      // Cap score at 100
-      score = Math.min(score, 100);
-
-      let riskLevel: "low" | "medium" | "high";
-      if (score < 40) {
+      // Amount-based risk assessment
+      if (numAmount <= 100) {
+        // Safe - Low Risk
+        score = Math.floor(Math.random() * 11) + 10; // Random between 10-20
         riskLevel = "low";
-        recommendations.push("Transaction appears safe");
+        warnings.push("This transaction appears safe.");
+        recommendations.push("Transaction amount is within safe limits");
         recommendations.push("Always verify recipient before sending money");
-      } else if (score < 70) {
+      } else if (numAmount <= 1000) {
+        // Medium Risk
+        score = Math.floor(Math.random() * 21) + 40; // Random between 40-60
         riskLevel = "medium";
+        warnings.push("Medium risk detected. Please verify the recipient.");
         recommendations.push("Exercise caution with this transaction");
         recommendations.push("Verify recipient identity through alternate means");
         recommendations.push("Consider using payment protection services");
       } else {
+        // High Risk
+        score = Math.floor(Math.random() * 21) + 80; // Random between 80-100
         riskLevel = "high";
+        warnings.push("High risk detected. Proceed with extreme caution.");
         recommendations.push("⚠️ High risk - DO NOT proceed without verification");
         recommendations.push("Contact recipient through official channels");
         recommendations.push("Report suspicious activity to your bank");
