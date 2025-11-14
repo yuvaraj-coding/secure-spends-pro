@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, Building2, Smartphone, Plus, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { CreditCard, Building2, Smartphone, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,6 @@ const AccountManagement = () => {
     { id: 2, name: "Current Account", bank: "HDFC Bank", accountNumber: "****1234", balance: "₹12,850" },
   ]);
 
-  const [transactions] = useState([
-    { id: 1, type: "credit", description: "Salary Credit", amount: "₹3,500", date: "2025-01-15", method: "Bank Transfer" },
-    { id: 2, type: "debit", description: "Grocery Shopping", amount: "₹85", date: "2025-01-14", method: "UPI" },
-    { id: 3, type: "debit", description: "Electricity Bill", amount: "₹120", date: "2025-01-13", method: "Bank Account" },
-    { id: 4, type: "credit", description: "Freelance Payment", amount: "₹500", date: "2025-01-12", method: "UPI" },
-  ]);
 
   useEffect(() => {
     let mounted = true;
@@ -82,10 +76,9 @@ const AccountManagement = () => {
         </div>
 
         <Tabs defaultValue="accounts" className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
             <TabsTrigger value="accounts">Bank Accounts</TabsTrigger>
             <TabsTrigger value="upi">UPI IDs</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
           </TabsList>
 
           <TabsContent value="accounts" className="space-y-4">
@@ -216,51 +209,6 @@ const AccountManagement = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="transactions" className="space-y-4">
-            <div className="mb-4">
-              <h2 className="text-2xl font-semibold">Recent Transactions</h2>
-              <p className="text-muted-foreground">View your recent transaction history</p>
-            </div>
-
-            <Card>
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {transactions.map((transaction) => (
-                    <div key={transaction.id} className="p-4 hover:bg-accent/5 transition-colors">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-2 rounded-lg ${
-                            transaction.type === "credit" 
-                              ? "bg-green-500/10 text-green-500" 
-                              : "bg-red-500/10 text-red-500"
-                          }`}>
-                            {transaction.type === "credit" ? (
-                              <ArrowDownLeft className="h-5 w-5" />
-                            ) : (
-                              <ArrowUpRight className="h-5 w-5" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="font-medium">{transaction.description}</p>
-                            <div className="flex gap-3 text-sm text-muted-foreground mt-1">
-                              <span>{transaction.date}</span>
-                              <span>•</span>
-                              <span>{transaction.method}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className={`text-lg font-semibold ${
-                          transaction.type === "credit" ? "text-green-500" : "text-red-500"
-                        }`}>
-                          {transaction.type === "credit" ? "+" : "-"}{transaction.amount}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </main>
     </div>
