@@ -7,15 +7,27 @@ import { useToast } from "@/hooks/use-toast";
 import { Html5Qrcode } from "html5-qrcode";
 
 interface QRScannerProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   onAddToExpense?: (amount: number, upiId: string) => void;
 }
 
-const QRScanner = ({ onAddToExpense }: QRScannerProps) => {
+const QRScanner = ({ open, onOpenChange, onAddToExpense }: QRScannerProps) => {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedData, setScannedData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const { toast } = useToast();
+
+  // Handle external open state changes
+  useEffect(() => {
+    if (open && !isScanning && !scannedData) {
+      // Delay to ensure dialog is mounted
+      setTimeout(() => startScanning(), 100);
+    } else if (!open) {
+      handleClose();
+    }
+  }, [open]);
 
   const stopScanner = async () => {
     if (scannerRef.current) {
@@ -83,6 +95,7 @@ const QRScanner = ({ onAddToExpense }: QRScannerProps) => {
     setIsScanning(false);
     setScannedData(null);
     setError(null);
+    onOpenChange?.(false);
   };
 
   const copyToClipboard = () => {
@@ -135,31 +148,36 @@ const QRScanner = ({ onAddToExpense }: QRScannerProps) => {
   const isUrl = scannedData && (scannedData.startsWith("http://") || scannedData.startsWith("https://"));
   const isUpi = scannedData && (scannedData.includes("upi://") || scannedData.includes("@"));
 
+  // If open prop is not provided, show the button card (standalone mode)
+  const showButton = open === undefined;
+
   return (
     <>
-      <Card className="relative overflow-hidden shadow-glow hover:shadow-elevated transition-all duration-300 border-primary/20">
-        <div className="absolute inset-0 bg-gradient-primary opacity-10" />
-        <CardHeader className="relative">
-          <CardTitle className="flex items-center gap-2">
-            <QrCode className="h-6 w-6 text-primary" />
-            QR Code Scanner
-          </CardTitle>
-          <CardDescription>Scan UPI QR codes and payment links</CardDescription>
-        </CardHeader>
-        <CardContent className="relative flex justify-center">
-          <Button
-            onClick={startScanning}
-            size="lg"
-            variant="hero"
-            className="h-24 w-24 rounded-full shadow-glow hover:scale-110 transition-transform duration-300"
-          >
-            <QrCode className="h-12 w-12" />
-          </Button>
-        </CardContent>
-      </Card>
+      {showButton && (
+        <Card className="relative overflow-hidden shadow-glow hover:shadow-elevated transition-all duration-300 border-primary/20">
+          <div className="absolute inset-0 bg-gradient-primary opacity-10" />
+          <CardHeader className="relative">
+            <CardTitle className="flex items-center gap-2">
+              <QrCode className="h-6 w-6 text-primary" />
+              QR Code Scanner
+            </CardTitle>
+            <CardDescription>Scan UPI QR codes and payment links</CardDescription>
+          </CardHeader>
+          <CardContent className="relative flex justify-center">
+            <Button
+              onClick={startScanning}
+              size="lg"
+              variant="hero"
+              className="h-24 w-24 rounded-full shadow-glow hover:scale-110 transition-transform duration-300"
+            >
+              <QrCode className="h-12 w-12" />
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Scanning Dialog */}
-      <Dialog open={isScanning} onOpenChange={handleClose}>
+      <Dialog open={isScanning || (open && !scannedData)} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Scanning QR Code</DialogTitle>

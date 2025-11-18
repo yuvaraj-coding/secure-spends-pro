@@ -1,10 +1,11 @@
-import { Shield, Menu, X, Sun, Moon, User, Settings, LogOut } from "lucide-react";
+import { Shield, Menu, X, Sun, Moon, User, Settings, LogOut, ScanLine } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AuthDialog } from "@/components/AuthDialog";
+import QRScanner from "@/components/QRScanner";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -19,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState<string>("");
   const [profilePicture, setProfilePicture] = useState<string>("");
@@ -122,6 +124,17 @@ const Navbar = () => {
 
           {/* Theme Toggle & User Profile */}
           <div className="hidden md:flex items-center gap-2">
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowQRScanner(true)}
+                className="relative h-10 w-10 rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
+                title="Scan QR Code"
+              >
+                <ScanLine className="h-5 w-5 text-primary-foreground" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -203,6 +216,19 @@ const Navbar = () => {
                   </Button>
                 </Link>
               ))}
+              {isAuthenticated && (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    setShowQRScanner(true);
+                  }}
+                  className="w-full justify-start bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300"
+                >
+                  <ScanLine className="mr-2 h-4 w-4" />
+                  <span>Scan QR Code</span>
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -269,6 +295,16 @@ const Navbar = () => {
       </div>
 
       <AuthDialog open={showAuthDialog} onOpenChange={setShowAuthDialog} />
+      {isAuthenticated && (
+        <QRScanner 
+          open={showQRScanner} 
+          onOpenChange={setShowQRScanner}
+          onAddToExpense={(data) => {
+            console.log("Add to expense:", data);
+            // Navigate to dashboard or handle as needed
+          }}
+        />
+      )}
     </nav>
   );
 };
