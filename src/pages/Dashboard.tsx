@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import Navbar from "@/components/Navbar";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import QRScanner from "@/components/QRScanner";
 import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
@@ -482,13 +481,6 @@ const Dashboard = () => {
                     </Card>
                   </Link>
                 ))}
-              </div>
-            </div>
-
-            {/* QR Scanner */}
-            <div className="flex justify-center animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: "450ms" }}>
-              <div className="w-full max-w-md">
-                <QRScanner onAddToExpense={handleAddExpenseFromQR} />
               </div>
             </div>
           </div>
