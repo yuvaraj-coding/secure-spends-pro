@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import Navbar from "@/components/Navbar";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import QRScanner from "@/components/QRScanner";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   // Editable state
@@ -76,6 +78,19 @@ const Dashboard = () => {
   const handleDeleteExpense = (id: number) => {
     setExpenses(expenses.filter(exp => exp.id !== id));
   };
+
+  const handleAddExpenseFromQR = (amount: number, upiId: string) => {
+    const newId = Math.max(...expenses.map(e => e.id)) + 1;
+    setExpenses([...expenses, { 
+      id: newId, 
+      category: `QR Payment - ${upiId}`, 
+      amount: amount || 100, 
+      icon: "📱",
+      color: "bg-primary"
+    }]);
+  };
+
+  const { toast } = useToast();
 
   // Calculations
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -467,6 +482,13 @@ const Dashboard = () => {
                     </Card>
                   </Link>
                 ))}
+              </div>
+            </div>
+
+            {/* QR Scanner */}
+            <div className="flex justify-center animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: "450ms" }}>
+              <div className="w-full max-w-md">
+                <QRScanner onAddToExpense={handleAddExpenseFromQR} />
               </div>
             </div>
           </div>
