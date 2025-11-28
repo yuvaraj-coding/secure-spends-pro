@@ -57,23 +57,34 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const systemPrompt = `You are a cybersecurity expert specializing in fraud detection and app safety analysis. 
-Analyze the provided URL and determine its safety level. Consider factors like:
-- Domain reputation and age
-- HTTPS/SSL certificate presence
-- Known phishing patterns
-- Suspicious URL structures
-- Common fraud indicators
-- App store presence and reviews (if applicable)
+    const systemPrompt = `You are a financial app security expert specializing in Indian regulatory compliance and fraud detection. 
+Analyze the provided financial app/website URL comprehensively based on these critical factors:
 
-Provide a comprehensive analysis with:
-1. A safety score (0-100)
-2. Whether it's safe (true/false)
-3. A detailed analysis explanation
-4. List of specific risks found (if any)
-5. Recommendations for the user
+🔍 ANALYSIS CHECKLIST:
+1. RBI/SEBI Verification - Check if regulated for financial services
+2. Fraud & Scam Reports - Search for verified complaints, news articles, govt warnings
+3. App Store Rating & Downloads - Verify ratings, number of downloads, review authenticity
+4. Developer & Company Authenticity - Verify company registration, contact details, transparency
+5. App Permissions - Analyze if permissions requested are excessive or suspicious
+6. Website Trust - Check HTTPS, privacy policy, terms, ISO certifications, contact info
+7. Recent User Complaints - Check social media, forums, consumer complaint portals
+8. Govt-Flagged Database - Cross-reference with CERT-IN, RBI warnings, cyber cell reports
 
-Be thorough but concise. If you cannot determine safety with certainty, err on the side of caution.`;
+📊 SCORING SYSTEM:
+- 75-100%: 🟢 Safe - "Trusted — You can use this app"
+- 50-74%: 🟡 Moderate Risk - "Use With Caution"
+- 0-49%: 🔴 Dangerous - "Avoid — High Scam Risk"
+
+Provide a detailed security report with:
+1. Overall safety score (0-100)
+2. Safety status (safe/moderate/dangerous)
+3. Status message based on score range
+4. Comprehensive analysis explaining the score
+5. Category-wise breakdown with pass/warning/fail for each of 8 checks
+6. Specific risks identified
+7. Actionable recommendations
+
+Be extremely thorough. For financial apps, prioritize regulatory compliance and user protection.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -117,9 +128,74 @@ Be thorough but concise. If you cannot determine safety with certainty, err on t
                     type: "array",
                     items: { type: "string" },
                     description: "Safety recommendations for the user"
+                  },
+                  statusMessage: {
+                    type: "string",
+                    description: "Status message based on score: 'Trusted — You can use this app', 'Use With Caution', or 'Avoid — High Scam Risk'"
+                  },
+                  categoryChecks: {
+                    type: "object",
+                    properties: {
+                      rbiVerification: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      fraudReports: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      appStoreRating: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      developerAuth: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      permissions: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      websiteTrust: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      userComplaints: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      },
+                      govtDatabase: {
+                        type: "object",
+                        properties: {
+                          status: { type: "string", enum: ["pass", "warning", "fail"] },
+                          message: { type: "string" }
+                        }
+                      }
+                    }
                   }
                 },
-                required: ["safetyScore", "isSafe", "analysis", "risks", "recommendations"]
+                required: ["safetyScore", "isSafe", "analysis", "risks", "recommendations", "statusMessage", "categoryChecks"]
               }
             }
           }
