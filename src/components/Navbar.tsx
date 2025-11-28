@@ -1,4 +1,4 @@
-import { Shield, Menu, X, Sun, Moon, User, Settings, LogOut, ScanLine } from "lucide-react";
+import { Shield, Menu, X, Sun, Moon, User, Settings, LogOut, ScanLine, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
@@ -125,15 +125,26 @@ const Navbar = () => {
           {/* Theme Toggle & User Profile */}
           <div className="hidden md:flex items-center gap-2">
             {isAuthenticated && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowQRScanner(true)}
-                className="relative h-10 w-10 rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
-                title="Scan QR Code"
-              >
-                <ScanLine className="h-5 w-5 text-primary-foreground" />
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/app-scanner")}
+                  className="relative h-10 w-10 rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
+                  title="App Scanner"
+                >
+                  <ShieldCheck className="h-5 w-5 text-primary-foreground" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowQRScanner(true)}
+                  className="relative h-10 w-10 rounded-full bg-gradient-primary hover:shadow-glow transition-all duration-300"
+                  title="Scan QR Code"
+                >
+                  <ScanLine className="h-5 w-5 text-primary-foreground" />
+                </Button>
+              </>
             )}
             <Button
               variant="ghost"
@@ -217,17 +228,30 @@ const Navbar = () => {
                 </Link>
               ))}
               {isAuthenticated && (
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setShowQRScanner(true);
-                  }}
-                  className="w-full justify-start bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300"
-                >
-                  <ScanLine className="mr-2 h-4 w-4" />
-                  <span>Scan QR Code</span>
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      navigate("/app-scanner");
+                    }}
+                    className="w-full justify-start bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300"
+                  >
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    <span>App Scanner</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setShowQRScanner(true);
+                    }}
+                    className="w-full justify-start bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300"
+                  >
+                    <ScanLine className="mr-2 h-4 w-4" />
+                    <span>Scan QR Code</span>
+                  </Button>
+                </>
               )}
               <Button
                 variant="ghost"
