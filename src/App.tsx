@@ -18,6 +18,7 @@ import InvestmentOpportunity from "./pages/InvestmentOpportunity";
 import SmartSavingsGoal from "./pages/SmartSavingsGoal";
 import TransactionHistory from "./pages/TransactionHistory";
 import ResetPassword from "./pages/ResetPassword";
+import OAuthConsent from "./pages/OAuthConsent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
